@@ -1,0 +1,143 @@
+import java.util.*;
+
+public class f
+{
+    public static void main(String [] args)
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("enter the numberof process");
+        int n = sc.nextInt();
+
+        System.out.println("enter the number of resources");
+        int m = sc.nextInt();
+
+        int max[][] = new int[n][m];
+        int alocation[][] = new int[n][m];
+        int rem[] = new int[m];
+
+        System.out.println("enter the max");
+        for(int i =0;i<n;i++)
+        {
+            for(int j =0;j<m;j++)
+            {
+                max[i][j] = sc.nextInt();
+            }
+        }
+
+        
+        System.out.println("enter the allocation");
+        for(int i =0;i<n;i++)
+        {
+            for(int j =0;j<m;j++)
+            {
+                alocation[i][j] = sc.nextInt();
+            }
+        }
+
+        for(int i = 0;i<m;i++)
+        {
+            rem[i] = sc.nextInt();
+        }
+
+        safe(n,m,max,alocation,rem);
+    }
+
+    public static void safe(int n, int m, int max[][],int alocation[][],int rem[])
+    {
+        int ans[]= new int[n];
+        int need [][] = new int[n][m];
+        int f[] = new int [n];
+        int ind =0;
+        
+
+        
+        System.out.println("need matrix");
+        for(int i =0;i<n;i++)
+        {
+            for(int j =0;j<m;j++)
+            {
+               need[i][j] = max[i][j]-alocation[i][j];
+            }
+        }
+
+
+        for(int i =0;i<n;i++)
+        {
+            for(int j =0;j<m;j++)
+            {
+               System.out.print(need[i][j]);
+            }
+
+            System.out.println(" ");
+        }
+
+           for(int k =0;k<n;k++)
+           {
+            for(int i =0;i<n;i++)
+            {
+                if(f[i]==0)
+                {
+                    boolean con = true;
+                    for(int j =0;j<m;j++)
+                    {
+                        if(need[i][j]>rem[j])
+                        {
+                            con = false;
+                            break;
+                        }
+                    }
+
+                    if(con)
+                    {
+                       ans[ind] = i;
+                       ind ++;
+
+                       for(int y =0;y<m;y++)
+                       {
+                         rem[y]= rem[y]+alocation[i][y];
+                       }
+
+                       f[i]=1;
+                    }
+                }
+            }
+           }
+
+           for(int i =0;i<n;i++)
+           {
+             System.err.println(ans[i]);
+           }
+    }
+}
+
+
+
+// enter the numberof process
+// 5
+// enter the number of resources
+// 3
+// enter the max
+// 7 5 3
+// 3 2 2
+// 9 0 2
+// 2 2 2
+// 4 3 3
+// enter the allocation
+// 0 1 0
+// 2  0 0
+// 3 0 2
+// 2 1 1
+// 0 0 2
+// 3 3 2
+// need matrix
+// 743 
+// 122 
+// 600 
+// 011 
+// 431 
+// 1
+// 3
+// 4
+// 0
+// 2
+// PS C:\Users\ASUS\OneDrive\Desktop\OS code> 

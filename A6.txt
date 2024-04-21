@@ -1,0 +1,143 @@
+import java.util.Scanner;
+
+public class Scheduling {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the number of memory blocks:");
+        int m = sc.nextInt();
+        int[] block = new int[m];
+
+        System.out.println("Enter the sizes of memory blocks:");
+        for (int i = 0; i < m; i++) {
+            block[i] = sc.nextInt();
+        }
+
+        System.out.println("Enter the number of processes:");
+        int n = sc.nextInt();
+        int[] process = new int[n];
+
+        System.out.println("Enter the sizes of processes:");
+        for (int i = 0; i < n; i++) {
+            process[i] = sc.nextInt();
+        }
+
+        first(m,block,n,process);
+      //  best(m,block,n,process);
+
+    }
+
+
+
+        public static void first(int m,int block[],int n , int process[])
+        {
+
+        int[] allocation = new int[n];
+        for (int i = 0; i < n; i++) {
+            allocation[i] = -1;
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (process[i] <= block[j]) {
+                    allocation[i] = j;
+                    block[j] -= process[i];
+                    break;
+                }
+            }
+        }
+
+        System.out.println("\nProcess\tProcess Size\tBlock No.");
+        for (int i = 0; i < n; i++) {
+            System.out.print(i + 1 + "\t\t" + process[i] + "\t\t");
+            if (allocation[i] != -1) {
+                System.out.println(allocation[i] + 1);
+            } else {
+                System.out.println("Not allocated");
+            }
+        }
+
+    }
+
+
+    public static void best(int m,int block[],int n , int process[])
+    {
+        int[] allocation = new int[n];
+        for (int i = 0; i < n; i++) {
+            allocation[i] = -1;
+        }
+
+        // Find the best fit block for each process
+        for (int i = 0; i < n; i++) {
+            int bestFitIdx = -1;
+            for (int j = 0; j < m; j++) {
+                if (block[j] >= process[i]) {
+                    if (bestFitIdx == -1 || block[j] < block[bestFitIdx]) {
+                        bestFitIdx = j;
+                    }
+                }
+            }
+            if (bestFitIdx != -1) {
+                allocation[i] = bestFitIdx;
+                block[bestFitIdx] -= process[i];
+            }
+        }
+
+        // Display allocation results
+        System.out.println("\nProcess\tSize\tBlock");
+        for (int i = 0; i < n; i++) {
+            System.out.print(i + "\t" + process[i] + "\t");
+            if (allocation[i] != -1) {
+                System.out.println(allocation[i]);
+            } else {
+                System.out.println("Not allocated");
+            }
+        }
+    }
+    
+}
+   
+
+// first:
+
+// Enter the number of memory blocks:
+// 2
+// Enter the sizes of memory blocks:
+// 150
+// 350
+// Enter the number of processes:
+// 4
+// Enter the sizes of processes:
+// 300
+// 24
+// 125
+// 50
+
+// Process Process Size    Block No.
+// 1               300             2
+// 2               24              1
+// 3               125             1
+// 4               50              2
+// PS C:\Users\ASUS\OneDrive\Desktop\OS code> 
+
+
+
+// best:
+// Enter the number of memory blocks:
+// 2
+// Enter the sizes of memory blocks:
+// 150
+// 350
+// Enter the number of processes:
+// 4
+// Enter the sizes of processes:
+// 300
+// 25
+// 125
+// 50
+
+// Process Size    Block
+// 0       300     1
+// 1       25      1
+// 2       125     0
+// 3       50      Not allocated
+// PS C:\Users\ASUS\OneDrive\Desktop\OS code> 

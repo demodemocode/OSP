@@ -1,0 +1,196 @@
+import java.util.Scanner;
+
+public class second {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter the number of processes:");
+        int processCount = sc.nextInt();
+        int[] processNo = new int[processCount];
+        int[] arrivalTime = new int[processCount];
+        int[] burstTime = new int[processCount];
+
+        System.out.println("Enter process number, arrival time, and burst time:");
+
+        for (int i = 0; i < processCount; i++) {
+            processNo[i] = sc.nextInt();
+            arrivalTime[i] = sc.nextInt();
+            burstTime[i] = sc.nextInt();
+
+            
+
+        }
+
+        fcfs(processCount,processNo,arrivalTime,burstTime);
+            
+      sjf(processCount,processNo,arrivalTime,burstTime);
+            
+    }
+
+    public static void sjf(int processCount, int processNo[],int arrivalTime[],int burstTime[])
+        {
+
+        // Initialize current time
+        int currentTime = 0;
+        int completed = 0;
+        int[] completionTime = new int[processCount];
+        int[] waitingTime = new int[processCount];
+
+        // Loop until all processes are completed
+        while (completed < processCount) {
+            int minBurstTime = Integer.MAX_VALUE;
+            int minIndex = -1;
+
+            // Find the process with the shortest burst time among arrived processes
+            for (int i = 0; i < processCount; i++) {
+                if (arrivalTime[i] <= currentTime && burstTime[i] < minBurstTime && burstTime[i] > 0) {
+                    minBurstTime = burstTime[i];
+                    minIndex = i;
+                }
+            }
+
+            // If multiple processes have the same burst time, select the one with the lowest arrival time
+            for (int i = 0; i < processCount; i++) {
+                if (arrivalTime[i] <= currentTime && burstTime[i] == minBurstTime) {
+                    if (minIndex == -1 || arrivalTime[i] < arrivalTime[minIndex]) {
+                        minIndex = i;
+                    }
+                }
+            }
+
+            // If a process is found
+            if (minIndex != -1) {
+                // Update current time
+                currentTime += burstTime[minIndex];
+
+                // Calculate completion time for the completed process
+                completionTime[minIndex] = currentTime;
+
+                // Calculate waiting time for the completed process
+                waitingTime[minIndex] = currentTime - arrivalTime[minIndex] - burstTime[minIndex];
+
+                // Mark the process as completed
+                burstTime[minIndex] = 0;
+                completed++;
+
+                // Display completion time for the completed process
+                System.out.println("Process " + processNo[minIndex] + " completed at time " + currentTime);
+            } else {
+                // If no process is available, move time forward
+                currentTime++;
+            }
+        }
+
+        // Calculate turnaround time
+        int[] turnaroundTime = new int[processCount];
+        for (int i = 0; i < processCount; i++) {
+            turnaroundTime[i] = completionTime[i] - arrivalTime[i];
+        }
+
+        // Display results
+        System.out.println("Process\tArrival Time\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time");
+        double avgTurnaroundTime = 0;
+        double avgWaitingTime = 0;
+        for (int i = 0; i < processCount; i++) {
+            System.out.println(processNo[i] + "\t\t" + arrivalTime[i] + "\t\t" + burstTime[i] + "\t\t" +
+                    completionTime[i] + "\t\t" + turnaroundTime[i] + "\t\t" + waitingTime[i]);
+            avgTurnaroundTime += turnaroundTime[i];
+            avgWaitingTime += waitingTime[i];
+        }
+        avgTurnaroundTime /= processCount;
+        avgWaitingTime /= processCount;
+        System.out.println("Average Turnaround Time: " + avgTurnaroundTime);
+        System.out.println("Average Waiting Time: " + avgWaitingTime);
+
+    }
+
+
+
+    public static void fcfs(int processCount, int processNo[],int arrivalTime[],int burstTime[])
+    {
+        for (int i = 0; i < processCount - 1; i++) {
+            for (int j = 0; j < processCount - i - 1; j++) {
+                if (arrivalTime[j] > arrivalTime[j + 1]) {
+                    // Swap process number
+                    int temp = processNo[j];
+                    processNo[j] = processNo[j + 1];
+                    processNo[j + 1] = temp;
+
+                    // Swap arrival time
+                    temp = arrivalTime[j];
+                    arrivalTime[j] = arrivalTime[j + 1];
+                    arrivalTime[j + 1] = temp;
+
+                    // Swap burst time
+                    temp = burstTime[j];
+                    burstTime[j] = burstTime[j + 1];
+                    burstTime[j + 1] = temp;
+                }
+            }
+        }
+
+        // Initialize current time to the arrival time of the first process
+        int currentTime = arrivalTime[0];
+
+        // Calculate completion time, turnaround time, and waiting time for each process
+        int[] completionTime = new int[processCount];
+        int[] turnaroundTime = new int[processCount];
+        int[] waitingTime = new int[processCount];
+
+        completionTime[0] = currentTime + burstTime[0];
+        turnaroundTime[0] = completionTime[0] - arrivalTime[0];
+        waitingTime[0] = turnaroundTime[0] - burstTime[0];
+
+        for (int i = 1; i < processCount; i++) {
+            // Update current time to the maximum of the arrival time of the next process and the completion time of the current process
+            currentTime = Math.max(currentTime + burstTime[i - 1], arrivalTime[i]);
+
+            // Calculate completion time for the current process
+            completionTime[i] = currentTime + burstTime[i];
+
+            // Calculate turnaround time and waiting time for the current process
+            turnaroundTime[i] = completionTime[i] - arrivalTime[i];
+            waitingTime[i] = turnaroundTime[i] - burstTime[i];
+        }
+
+        // Display results
+        System.out.println("Process\tArrival Time\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time");
+        for (int i = 0; i < processCount; i++) {
+            System.out.println(processNo[i] + "\t\t" + arrivalTime[i] + "\t\t" + burstTime[i] + "\t\t" +
+                    completionTime[i] + "\t\t" + turnaroundTime[i] + "\t\t" + waitingTime[i]);
+        }
+
+        
+    }
+}
+
+// output:
+
+// Enter the number of processes:
+// 5
+// Enter process number, arrival time, and burst time:
+// 1 0 3
+// 2 1 1
+// 3 2 4
+// 4 3 5
+// 5 4 2
+// Process Arrival Time    Burst Time      Completion Time Turnaround Time        Waiting Time
+// 1               0               3               3             0
+// 2               1               1               4             2
+// 3               2               4               8             2
+// 4               3               5               13            10               5
+// 5               4               2               15            11               9
+// Process 1 completed at time 3
+// Process 2 completed at time 4
+// Process 5 completed at time 6
+// Process 3 completed at time 10
+// Process 4 completed at time 15
+// Process Arrival Time    Burst Time      Completion Time Turnaround Time        Waiting Time
+// 1               0               0               3             0
+// 2               1               0               4             2
+// 3               2               0               10            4
+// 4               3               0               15            12               7
+// 5               4               0               6             0
+// Average Turnaround Time: 5.6
+// Average Waiting Time: 2.6
+// PS C:\Users\ASUS\OneDrive\Desktop\OS code> 
